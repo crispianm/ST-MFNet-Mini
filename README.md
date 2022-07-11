@@ -78,7 +78,8 @@ The dataset folder names should be lower-case and structured as follows.
 ## Downloading the pre-trained model
 Download the pre-trained ST-MFNet from [here](https://drive.google.com/file/d/1s5JJdt5X69AO2E2uuaes17aPwlWIQagG/view?usp=sharing).
 
-## Step 1: Architecture Compression
+## Training
+### Step 1: Architecture Compression
 OBProxSG options can be modified in `utility.py` inside of the make_optimizer function. Feel free to experiment with other options, but here is an example:
 ```
 python train.py \
@@ -90,7 +91,7 @@ python train.py \
 ```
 
 
-## Step 2: Knowledge Distillation
+### Step 2: Knowledge Distillation
 Feel free to experiment with other options, but here is an example:
 ```
 python distill.py \
