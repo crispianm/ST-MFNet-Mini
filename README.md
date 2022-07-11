@@ -85,7 +85,7 @@ OBProxSG options can be modified in `utility.py` inside of the make_optimizer fu
 python train.py \
 --load <path to pre-trained stmfnet model.pth> \
 --data_dir <path to data directory> \
---out_dir ./train_results \
+--out_dir "./train_results" \
 --epochs 20 \
 --optimizer "OBProxSG"
 ```
@@ -102,7 +102,7 @@ python distill.py \
 --distill_loss_fn "KLDivLoss" \
 --alpha 0.1 \
 --data_dir <path to data directory> \
---out_dir ./distill_results \
+--out_dir "./distill_results" \
 --optimizer "ADAMax"
 ```
 
