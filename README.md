@@ -1,4 +1,4 @@
-# ST-MFNet Compressor: Compression Driver Design for A Spatio-Temporal Multi-Flow Network for Frame Interpolation
+# ST-MFNet Mini: Knowledge Distillation-Driven Frame Interpolation
 
 [Original Project](https://danielism97.github.io/ST-MFNet) | [Paper](https://openaccess.thecvf.com/content/CVPR2022/html/Danier_ST-MFNet_A_Spatio-Temporal_Multi-Flow_Network_for_Frame_Interpolation_CVPR_2022_paper.html) | [arXiv](https://arxiv.org/abs/2111.15483) | [Video](https://drive.google.com/file/d/1zpE3rCQNJi4e8ADNWKbJA5wTvPllKZSj/view) | [Poster](https://danielism97.github.io/ST-MFNet/ST_MFNet_CVPR_poster.pdf)
 
