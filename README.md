@@ -27,9 +27,6 @@ pip install opencv-python==4.5.1.48
 pip install sk-video==1.1.10
 ```
 
-## Model
-<img src="https://danielism97.github.io/ST-MFNet/overall.svg" alt="Paper" width="60%">
-
 ## Preparing datasets
 ### Training sets:
 [[Vimeo-90K]](http://toflow.csail.mit.edu/) | [[BVI-DVC quintuplets]](https://uob-my.sharepoint.com/:f:/g/personal/mt20523_bristol_ac_uk/EnHgdYU1cwNEhl-3BXFL8ncBXXGpg7u3N_oiXQ4OJuLXtw?e=fxdITc)
@@ -79,7 +76,7 @@ The dataset folder names should be lower-case and structured as follows.
 Download the pre-trained ST-MFNet from [here](https://drive.google.com/file/d/1s5JJdt5X69AO2E2uuaes17aPwlWIQagG/view?usp=sharing).
 
 ## Training
-### Step 1: Architecture Compression
+### Phase 1: Architecture Compression
 OBProxSG options can be modified in `utility.py` inside of the make_optimizer function. Feel free to experiment with other options, but here is an example:
 ```
 python train.py \
@@ -91,7 +88,7 @@ python train.py \
 ```
 
 
-### Step 2: Knowledge Distillation
+### Phase 2: Knowledge Distillation
 Feel free to experiment with other options, but here is an example:
 ```
 python distill.py \
