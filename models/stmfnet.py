@@ -83,8 +83,7 @@ class UNet3d_18(nn.Module):
 
         self.outconv = nn.Sequential(
             nn.ReflectionPad2d(3),
-            nn.Conv2d(channels[::-1][3], 3,
-                      kernel_size=7, stride=1, padding=0),
+            nn.Conv2d(channels[::-1][3], 3, kernel_size=7, stride=1, padding=0),
         )
 
     def forward(self, im1, im3, im5, im7, im4_tilde):
@@ -132,8 +131,7 @@ class KernelEstimation(torch.nn.Module):
                     in_channels=64, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
                 torch.nn.ReLU(inplace=False),
-                torch.nn.Upsample(
-                    scale_factor=2, mode="bilinear", align_corners=True),
+                torch.nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True),
                 torch.nn.Conv2d(
                     in_channels=ks, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
@@ -153,8 +151,7 @@ class KernelEstimation(torch.nn.Module):
                     in_channels=64, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
                 torch.nn.ReLU(inplace=False),
-                torch.nn.Upsample(
-                    scale_factor=2, mode="bilinear", align_corners=True),
+                torch.nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True),
                 torch.nn.Conv2d(
                     in_channels=ks, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
@@ -206,8 +203,7 @@ class KernelEstimation(torch.nn.Module):
                     in_channels=64, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
                 torch.nn.ReLU(inplace=False),
-                torch.nn.Upsample(
-                    scale_factor=4, mode="bilinear", align_corners=True),
+                torch.nn.Upsample(scale_factor=4, mode="bilinear", align_corners=True),
                 torch.nn.Conv2d(
                     in_channels=ks, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
@@ -227,8 +223,7 @@ class KernelEstimation(torch.nn.Module):
                     in_channels=64, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
                 torch.nn.ReLU(inplace=False),
-                torch.nn.Upsample(
-                    scale_factor=4, mode="bilinear", align_corners=True),
+                torch.nn.Upsample(scale_factor=4, mode="bilinear", align_corners=True),
                 torch.nn.Conv2d(
                     in_channels=ks, out_channels=ks, kernel_size=3, stride=1, padding=1
                 ),
@@ -384,8 +379,7 @@ class STMFNet(torch.nn.Module):
             I3 = F.pad(I3, (0, pad_w, 0, 0), mode="reflect")
             w_padded = True
 
-        feats = self.feature_extractor(
-            moduleNormalize(I1), moduleNormalize(I2))
+        feats = self.feature_extractor(moduleNormalize(I1), moduleNormalize(I2))
         kernelest = self.get_kernel(feats)
         Weight1_ds, Alpha1_ds, Beta1_ds, Weight2_ds, Alpha2_ds, Beta2_ds = kernelest[:6]
         Weight1, Alpha1, Beta1, Weight2, Alpha2, Beta2 = kernelest[6:12]
@@ -395,13 +389,11 @@ class STMFNet(torch.nn.Module):
 
         # Original scale
         tensorAdaCoF1 = (
-            self.moduleAdaCoF(self.modulePad(I1), Weight1,
-                              Alpha1, Beta1, self.dilation)
+            self.moduleAdaCoF(self.modulePad(I1), Weight1, Alpha1, Beta1, self.dilation)
             * 1.0
         )
         tensorAdaCoF2 = (
-            self.moduleAdaCoF(self.modulePad(I2), Weight2,
-                              Alpha2, Beta2, self.dilation)
+            self.moduleAdaCoF(self.modulePad(I2), Weight2, Alpha2, Beta2, self.dilation)
             * 1.0
         )
 
@@ -422,15 +414,13 @@ class STMFNet(torch.nn.Module):
         )
         tensorAdaCoF1_ds = (
             self.moduleAdaCoF(
-                self.modulePad(
-                    I1_ds), Weight1_ds, Alpha1_ds, Beta1_ds, self.dilation
+                self.modulePad(I1_ds), Weight1_ds, Alpha1_ds, Beta1_ds, self.dilation
             )
             * 1.0
         )
         tensorAdaCoF2_ds = (
             self.moduleAdaCoF(
-                self.modulePad(
-                    I2_ds), Weight2_ds, Alpha2_ds, Beta2_ds, self.dilation
+                self.modulePad(I2_ds), Weight2_ds, Alpha2_ds, Beta2_ds, self.dilation
             )
             * 1.0
         )
@@ -440,15 +430,13 @@ class STMFNet(torch.nn.Module):
         I2_us = self.upsampler(I2)
         tensorAdaCoF1_us = (
             self.moduleAdaCoF(
-                self.modulePad(
-                    I1_us), Weight1_us, Alpha1_us, Beta1_us, self.dilation
+                self.modulePad(I1_us), Weight1_us, Alpha1_us, Beta1_us, self.dilation
             )
             * 1.0
         )
         tensorAdaCoF2_us = (
             self.moduleAdaCoF(
-                self.modulePad(
-                    I2_us), Weight2_us, Alpha2_us, Beta2_us, self.dilation
+                self.modulePad(I2_us), Weight2_us, Alpha2_us, Beta2_us, self.dilation
             )
             * 1.0
         )
@@ -469,13 +457,11 @@ class STMFNet(torch.nn.Module):
         tensorSoftsplat2 = self.softsplat(I2, 0.5 * flow_2_0, metric_2_0)
 
         # synthesize multiple scales
-        tensorCombine_us = torch.cat(
-            [tensorAdaCoF1_us, tensorAdaCoF2_us], dim=1)
+        tensorCombine_us = torch.cat([tensorAdaCoF1_us, tensorAdaCoF2_us], dim=1)
         tensorCombine = torch.cat(
             [tensorAdaCoF1, tensorAdaCoF2, tensorSoftsplat0, tensorSoftsplat2], dim=1
         )
-        tensorCombine_ds = torch.cat(
-            [tensorAdaCoF1_ds, tensorAdaCoF2_ds], dim=1)
+        tensorCombine_ds = torch.cat([tensorAdaCoF1_ds, tensorAdaCoF2_ds], dim=1)
         output_tilde = self.scale_synthesis(
             tensorCombine_us, tensorCombine, tensorCombine_ds
         )[0]
