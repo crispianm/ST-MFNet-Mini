@@ -4,12 +4,12 @@ import cv2
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
-from metrics import pytorch_ssim
+from metrics import pytorch_ssim, lpips
 from obprox import OBProxSG
 
 
-def make_optimizer(args, my_model, train_loader):
-    trainable = filter(lambda x: x.requires_grad, my_model.parameters())
+def make_optimizer(args, model, train_loader=100):
+    trainable = filter(lambda x: x.requires_grad, model.parameters())
 
     if args.optimizer == "SGD":
         optimizer_function = optim.SGD
@@ -26,11 +26,11 @@ def make_optimizer(args, my_model, train_loader):
     elif args.optimizer == "OBProxSG":
         optimizer_function = OBProxSG
         kwargs = {
-            'lambda_': 1e-4,  # L1 regularization weight
-            'epochSize': len(train_loader),  # number of batches per epoch
-            'eps': 0.0001,  # one from AdaCoF
-            'Np': int(args.epochs / 10),  # one from AdaCoF
-            'No': 'inf'  # don't change
+            "lambda_": 1e-4,  # L1 regularization weight
+            "epochSize": len(train_loader),  # number of batches per epoch
+            "eps": 0.0001,  # one from AdaCoF
+            "Np": int(args.epochs / 10),  # one from AdaCoF
+            "No": "inf",  # don't change
         }
     kwargs["lr"] = args.lr
     kwargs["weight_decay"] = args.weight_decay
@@ -40,8 +40,7 @@ def make_optimizer(args, my_model, train_loader):
 
 def make_scheduler(args, my_optimizer):
     if args.decay_type == "step":
-        scheduler = lrs.StepLR(
-            my_optimizer, step_size=args.lr_decay, gamma=args.gamma)
+        scheduler = lrs.StepLR(my_optimizer, step_size=args.lr_decay, gamma=args.gamma)
     elif args.decay_type.find("step") >= 0:
         milestones = args.decay_type.split("_")
         milestones.pop(0)
@@ -82,6 +81,16 @@ def moduleNormalize(frame):
     )
 
 
+def CharbonnierFunc(data, epsilon=0.001):
+    return torch.mean(torch.sqrt(data**2 + epsilon**2))
+
+
+def calc_lpips(gt, out):
+    loss_fn = lpips.LPIPS(net="alex", version="0.1").cuda()
+    # return loss_fn.forward(gt, out, normalize=True)
+    return loss_fn.forward(quantize(gt) / 255, quantize(out) / 255, normalize=True)
+
+
 class FoldUnfold:
     """
     Class to handle folding tensor frame into batch of patches and back to frame again
@@ -114,10 +123,8 @@ class FoldUnfold:
         n_blocks_w = (self.width // (self.stride)) + 1
 
         # how much to pad each edge by
-        self.pad_h = (self.stride * n_blocks_h +
-                      self.overlap - self.height) // 2
-        self.pad_w = (self.stride * n_blocks_w +
-                      self.overlap - self.width) // 2
+        self.pad_h = (self.stride * n_blocks_h + self.overlap - self.height) // 2
+        self.pad_w = (self.stride * n_blocks_w + self.overlap - self.width) // 2
         self.height_pad = self.height + 2 * self.pad_h
         self.width_pad = self.width + 2 * self.pad_w
 
@@ -144,8 +151,7 @@ class FoldUnfold:
         """
 
         # reshape and permute back into [frames, chans * patch_size ** 2, num_patches] as expected by fold
-        frame_unfold = patches.reshape(-1, 3 *
-                                       self.patch_size**2, 1).permute(2, 1, 0)
+        frame_unfold = patches.reshape(-1, 3 * self.patch_size**2, 1).permute(2, 1, 0)
 
         # fold into tensor of shape pad_shape
         frame_fold = F.fold(
@@ -174,7 +180,7 @@ class FoldUnfold:
 
         # crop frame to remove the padded areas
         frame_crop = frame_div[
-            :, :, self.pad_h: -self.pad_h, self.pad_w: -self.pad_w
+            :, :, self.pad_h : -self.pad_h, self.pad_w : -self.pad_w
         ].clone()
 
         return frame_crop
@@ -200,12 +206,10 @@ def read_frame_yuv2rgb(stream, width, height, iFrame, bit_depth, pix_fmt="420"):
 
         # read chroma samples and upsample since original is 4:2:0 sampling
         U = np.fromfile(
-            stream, dtype=datatype, count=(
-                width // uv_factor) * (height // uv_factor)
+            stream, dtype=datatype, count=(width // uv_factor) * (height // uv_factor)
         ).reshape((height // uv_factor, width // uv_factor))
         V = np.fromfile(
-            stream, dtype=datatype, count=(
-                width // uv_factor) * (height // uv_factor)
+            stream, dtype=datatype, count=(width // uv_factor) * (height // uv_factor)
         ).reshape((height // uv_factor, width // uv_factor))
 
     else:
@@ -216,20 +220,18 @@ def read_frame_yuv2rgb(stream, width, height, iFrame, bit_depth, pix_fmt="420"):
         )
 
         U = np.fromfile(
-            stream, dtype=datatype, count=(
-                width // uv_factor) * (height // uv_factor)
+            stream, dtype=datatype, count=(width // uv_factor) * (height // uv_factor)
         ).reshape((height // uv_factor, width // uv_factor))
         V = np.fromfile(
-            stream, dtype=datatype, count=(
-                width // uv_factor) * (height // uv_factor)
+            stream, dtype=datatype, count=(width // uv_factor) * (height // uv_factor)
         ).reshape((height // uv_factor, width // uv_factor))
 
     if pix_fmt == "420":
         yuv = np.empty((height * 3 // 2, width), dtype=datatype)
         yuv[0:height, :] = Y
 
-        yuv[height: height + height // 4, :] = U.reshape(-1, width)
-        yuv[height + height // 4:, :] = V.reshape(-1, width)
+        yuv[height : height + height // 4, :] = U.reshape(-1, width)
+        yuv[height + height // 4 :, :] = V.reshape(-1, width)
 
         if bit_depth != 8:
             yuv = (yuv / (2**bit_depth - 1) * 255).astype(np.uint8)
