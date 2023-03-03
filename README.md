@@ -1,6 +1,6 @@
 # ST-MFNet Mini: Knowledge Distillation-Driven Frame Interpolation
 
-[Original Project](https://danielism97.github.io/ST-MFNet) | [Paper](https://openaccess.thecvf.com/content/CVPR2022/html/Danier_ST-MFNet_A_Spatio-Temporal_Multi-Flow_Network_for_Frame_Interpolation_CVPR_2022_paper.html) | [arXiv](https://arxiv.org/abs/2111.15483) | [Video](https://drive.google.com/file/d/1zpE3rCQNJi4e8ADNWKbJA5wTvPllKZSj/view) | [Poster](https://danielism97.github.io/ST-MFNet/ST_MFNet_CVPR_poster.pdf)
+[Original Project](https://danielism97.github.io/ST-MFNet) | [Original Paper](https://openaccess.thecvf.com/content/CVPR2022/html/Danier_ST-MFNet_A_Spatio-Temporal_Multi-Flow_Network_for_Frame_Interpolation_CVPR_2022_paper.html) | [arXiv](https://arxiv.org/abs/2302.08455)
 
 
 ## Dependencies and Installation
@@ -72,8 +72,9 @@ The dataset folder names should be lower-case and structured as follows.
 
 ```
 
-## Downloading the pre-trained model
+## Downloading the pre-trained models
 Download the pre-trained ST-MFNet from [here](https://drive.google.com/file/d/1s5JJdt5X69AO2E2uuaes17aPwlWIQagG/view?usp=sharing).
+The pre-trained ST-MFNet Mini is included in the repository, inside the models folder, or as a download [here](https://github.com/crispianm/ST-MFNet-Mini/raw/main/models/stmfnet_mini.pth).
 
 ## Training
 ### Phase 1: Architecture Compression
@@ -93,10 +94,9 @@ Feel free to experiment with other options, but here is an example:
 ```
 python distill.py \
 --student "student_STMFNet" \
---temp 10 \
 --teacher "STMFNet" \
---teacher_dir <path to pre-trained stmfnet model.pth> \
---distill_loss_fn "KLDivLoss" \
+--distill_loss_fn "1*Lap" \
+--student_loss_fn  "1*Lap" \
 --alpha 0.1 \
 --data_dir <path to data directory> \
 --out_dir "./distill_results" \
@@ -107,26 +107,13 @@ python distill.py \
 ## Evaluation (on test sets)
 ```
 python evaluate.py \
---net STMFNet \
+--net student_STMFNet \
 --data_dir <data directory> \
 --checkpoint <path to pre-trained model (.pth file)> \
 --out_dir eval_results \
 --dataset <dataset name>
 ```
 where `<dataset name>` should be the same as the class names defined in `data/testsets.py`, e.g. `Snufilm_extreme_quintuplet`.
-
-
-## Evaluation (on videos)
-```
-python interpolate_yuv.py \
---net STMFNet \
---checkpoint <path to pre-trained model (.pth file)> \
---yuv_path <path to input YUV file> \
---size <spatial size of input YUV file, e.g. 1920x1080>
---out_fps <output FPS, e.g. 60>
---out_dir <desired output dir>
-```
-See more details in `interpolate_yuv.py`. Note the script provided is for up-sampling `.yuv` files. To process `.mp4` files, one can modify the frame reading parts of the script, or simply convert `mp4` to `yuv` using [ffmpeg](https://ffmpeg.org/) then use this script.
 
 
 ## Acknowledgement
