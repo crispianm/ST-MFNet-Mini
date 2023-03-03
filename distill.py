@@ -14,7 +14,6 @@ parser = argparse.ArgumentParser(description="STMFNet")
 # Distillation options
 # student
 parser.add_argument("--student", type=str, default="student_STMFNet")
-parser.add_argument("--temp", type=int, default=5)
 
 # teacher
 parser.add_argument("--teacher", type=str, default="STMFNet")

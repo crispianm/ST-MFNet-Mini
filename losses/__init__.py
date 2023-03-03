@@ -62,7 +62,6 @@ class DistillationLoss(nn.modules.loss._Loss):
 
         self.loss = []
         self.loss_module = nn.ModuleList()
-        self.temp = args.temp
         self.alpha = args.alpha
 
         for loss in args.distill_loss_fn.split("+"):
