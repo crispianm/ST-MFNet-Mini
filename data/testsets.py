@@ -55,7 +55,7 @@ class VFITex_triplet:
                 inputs_list.append(utility.tensor2rgb(im2))
 
                 for metric in metrics:
-                    if metric in ["PSNR", "SSIM"]:
+                    if metric in ["PSNR", "SSIM", "LPIPS"]:
                         score = getattr(utility, "calc_{}".format(metric.lower()))(
                             im1, out
                         )[0].item()
@@ -69,7 +69,7 @@ class VFITex_triplet:
 
             # compute sequence-level scores
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     results_dict[metric].append(np.mean(tmp_dict[metric]))
                 else:
                     print("Metric {} is not supported.".format(metric))
@@ -146,7 +146,7 @@ class VFITex_quintuplet:
                 inputs_list.append(utility.tensor2rgb(im5))
 
                 for metric in metrics:
-                    if metric in ["PSNR", "SSIM"]:
+                    if metric in ["PSNR", "SSIM", "LPIPS"]:
                         score = getattr(utility, "calc_{}".format(metric.lower()))(
                             im4, out
                         )[0].item()
@@ -160,7 +160,7 @@ class VFITex_quintuplet:
 
             # compute sequence-level scores
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     results_dict[metric].append(np.mean(tmp_dict[metric]))
                 else:
                     print("Metric {} is not supported.".format(metric))
@@ -227,7 +227,7 @@ class Davis90_triplet:
                 inputs_list.append(utility.tensor2rgb(im5))
 
                 for metric in metrics:
-                    if metric in ["PSNR", "SSIM"]:
+                    if metric in ["PSNR", "SSIM", "LPIPS"]:
                         score = getattr(utility, "calc_{}".format(metric.lower()))(
                             im4, out
                         )[0].item()
@@ -241,7 +241,7 @@ class Davis90_triplet:
 
             # compute sequence-level scores
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     results_dict[metric].append(np.mean(tmp_dict[metric]))
                 else:
                     print("Metric {} is not supported.".format(metric))
@@ -312,8 +312,6 @@ class Davis90_quintuplet:
             t1_stop = time.time()  # end time
 
             elapsed_time = t1_stop - t1_start
-            # print("elapsed_time: ", elapsed_time)
-            # print("frames: ", i)
             results_dict["Times"].append(elapsed_time)
             results_dict["Frames"].append(i)
 
@@ -325,7 +323,7 @@ class Davis90_quintuplet:
             inputs_list.append(utility.tensor2rgb(im5))
 
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     score = getattr(utility, "calc_{}".format(metric.lower()))(
                         im4, out
                     )[0].item()
@@ -339,7 +337,7 @@ class Davis90_quintuplet:
 
             # compute sequence-level scores
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     results_dict[metric].append(np.mean(tmp_dict[metric]))
                 else:
                     print("Metric {} is not supported.".format(metric))
@@ -415,7 +413,7 @@ class Ucf101_triplet:
             gt = self.gt_list[idx]
 
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     score = getattr(utility, "calc_{}".format(metric.lower()))(gt, out)[
                         0
                     ].item()
@@ -507,7 +505,7 @@ class Ucf101_quintuplet:
             gt = self.gt_list[idx]
 
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     score = getattr(utility, "calc_{}".format(metric.lower()))(gt, out)[
                         0
                     ].item()
@@ -596,7 +594,7 @@ class Snufilm_extreme_quintuplet:
                 out = model(im1, im3, im5, im7)
 
             for metric in metrics:
-                if metric in ["PSNR", "SSIM"]:
+                if metric in ["PSNR", "SSIM", "LPIPS"]:
                     score = getattr(utility, "calc_{}".format(metric.lower()))(
                         im4, out
                     )[0].item()
