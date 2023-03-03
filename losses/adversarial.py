@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision
 
 
 class Adversarial(nn.Module):
@@ -33,8 +34,9 @@ class Adversarial(nn.Module):
         self.scheduler = utility.make_scheduler(args, self.optimizer)
 
     def forward(self, fake, real, input_frames=None):
-        if len(input_frames) == 4:
-            input_frames = input_frames[1:3]
+        if input_frames is not None:
+            if len(input_frames) == 4:
+                input_frames = input_frames[1:3]
         fake_detach = fake.detach()
 
         self.loss = 0
