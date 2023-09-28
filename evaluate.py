@@ -7,10 +7,10 @@ from data import testsets
 parser = argparse.ArgumentParser(description="Frame Interpolation Evaluation")
 
 parser.add_argument("--gpu_id", type=int, default=0)
-parser.add_argument("--net", type=str, default="STMFNet")
+parser.add_argument("--net", type=str, default="student_STMFNet")
 parser.add_argument("--dataset", type=str, default="Davis90_quintuplet")
 parser.add_argument("--metrics", nargs="+", type=str, default=["PSNR", "SSIM"])
-parser.add_argument("--checkpoint", type=str, default="./models/stmfnet.pth")
+parser.add_argument("--checkpoint", type=str, default="./models/stmfnet_mini.pth")
 parser.add_argument("--data_dir", type=str, default="D:\\stmfnet_data")
 parser.add_argument("--out_dir", type=str, default="tests")
 
